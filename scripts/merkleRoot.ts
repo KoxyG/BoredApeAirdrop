@@ -45,9 +45,21 @@ async function generateMerkleRoot(csvFilePath: string): Promise<void> {
  
 
   // Create the Merkle root
-  const tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
+  const tree = new MerkleTree(leaves, keccak256, { hashLeaves: true, sortPairs: true });
   const  root = tree.getHexRoot();
   console.log("Merkle root:", root);
+
+  // Convert tree structure to JSON
+  const treeJson = {
+    root,
+    leaves: leaves.map((leaf) => leaf.toString('hex')),
+  };
+
+  // Save the tree JSON to a file
+  const outputPath = path.join(__dirname, "tree.json");
+  fs.writeFileSync(outputPath, JSON.stringify(treeJson, null, 2));
+
+  console.log("Merkle tree saved to tree.json");
 
 
 

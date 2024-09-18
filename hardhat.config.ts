@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import * as dotenv from "dotenv";
+
 dotenv.config();
 
 const config: HardhatUserConfig = {
@@ -12,15 +13,20 @@ const config: HardhatUserConfig = {
       accounts: [process.env.ACCOUNT_PRIVATE_KEY!],
       gasPrice: 1000000000,
     },
-    //npx hardhat ignition  deploy ignition/modules/Factory.d.js --network eth-sepolia --reset
-    "eth-sepolia":{
-        url: process.env.SEPOLIA_RPC_URL,
+    "eth-sepolia": {
+      url: process.env.SEPOLIA_RPC_URL,
       accounts: [process.env.ACCOUNT_PRIVATE_KEY!],
-      gasPrice: 1000000000, 
-    }
+      gasPrice: 1000000000,
+    },
+    hardhat: {
+      forking: process.env.ALCHEMY_MAINNET_API_KEY_URL
+        ? {
+            url: process.env.ALCHEMY_MAINNET_API_KEY_URL,
+          }
+        : undefined,
+    },
   },
   etherscan: {
-    // Use "123" as a placeholder, because Blockscout doesn't need a real API key, and Hardhat will complain if this property isn't set.
     apiKey: {
       "lisk-sepolia": "123",
     },

@@ -1,3 +1,3 @@
 # BoredApeAirdrop
 
-- Merkle root: 0xa8e8d9312ad45157efa957beb3b1b874d91b8eeca58cb768fe62deec62cf2f62
+- Merkle root: 0x661f29a607910ada4ef21e98a9425044c2e3b6ee0775140c5233215d9400b468
