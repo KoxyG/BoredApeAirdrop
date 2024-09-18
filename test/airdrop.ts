@@ -9,6 +9,7 @@ import merkleTree, { MerkleTree } from "merkletreejs";
 
 const helpers = require("@nomicfoundation/hardhat-network-helpers");
 const keccak256 = require("keccak256");
+import { generateProof } from "../scripts/merkleProof"
 
 describe("Airdrop", function () {
   async function deployToken() {
@@ -20,57 +21,14 @@ describe("Airdrop", function () {
     return { Token, owner };
   }
 
-  // async function impersonateAndFund(account: any) {
-  //   await network.provider.request({
-  //     method: "hardhat_impersonateAccount",
-  //     params: [account],
-  //   });
-    
-  //   const [deployer] = await hre.ethers.getSigners();
-  
-  
-  //   await deployer.sendTransaction({
-  //     to: account,
-  //     value: hre.ethers.parseEther("1.0")
-  //   });
-  // }
 
-  async function getTree() {
-    
-
-  const claimAddress = [
-    { address: "0xe7b3d473411dd530D7889805e148b738F2236E6d", amount: "16" },
-    { address: "0xEee899B6521DB73E94F4B9224Cdf3db0010Fa334", amount: "7" },
-    { address: "0xF3c8A1BaF3D533D300D02798169991D2aAFab019", amount: "18" },
-    { address: "0xe785aAfD96E23510A7995E16b49C22D15f219B85", amount: "57" }
-  ];
-
-
-  
-  let leaves = claimAddress.map(({ address, amount }) => {
-    return keccak256(
-      hre.ethers.solidityPacked(
-        ['address', 'uint256'],
-        [address, amount]
-      )
-    );
-  });
-
-
-  let tree = new MerkleTree(leaves, keccak256, {hashLeaves: true, sortPairs: true});
-  
-
-  const merkleRoot = tree.getHexRoot();
- 
-  return {merkleRoot, tree, claimAddress }
-  }
 
   
 
 
   async function deployMerkleAirdrop() {
 
-    const { merkleRoot } = await loadFixture(getTree);
+    const  merkleRoot  = "0x743400bd17b9e2f1765556ad5f489304aa962b5d162e77d8028c555ddb112deb";
     const { Token, owner } = await loadFixture(deployToken);
 
     const BoredApeYachtClub = "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d";
@@ -115,7 +73,7 @@ describe("Airdrop", function () {
     });
 
     it("Should check if the merkle root is correct", async function () {
-      const { merkleRoot } = await loadFixture(getTree);
+      const  merkleRoot  = "0x743400bd17b9e2f1765556ad5f489304aa962b5d162e77d8028c555ddb112deb";
       const { MerkleAirdrop, owner } = await loadFixture(deployMerkleAirdrop);
 
       expect(await MerkleAirdrop.merkleRoot()).to.equal(merkleRoot);
@@ -123,47 +81,23 @@ describe("Airdrop", function () {
 
     it("Allow whitelisted address to claim if they hold BoredApeNFT", async function () {
       const { MerkleAirdrop, Token, BoredApeYachtClub } = await deployMerkleAirdrop();
-      const { tree, claimAddress } = await getTree();
-      
-      
-
-      
+     
+       
       const NFT_HOLDER = "0xe7b3d473411dd530D7889805e148b738F2236E6d";
       const impersonatedSigner = await hre.ethers.getSigner(NFT_HOLDER);
      
-    
-
-    
-      const claimInfo = claimAddress.find(data => data.address.toLowerCase() === NFT_HOLDER.toLowerCase());
-      if (!claimInfo) {
-        throw new Error("Test address not found in claim data");
-      }
-
-      const amount = hre.ethers.parseUnits(claimInfo.amount, 18);
-      const leaf = keccak256(
-        hre.ethers.solidityPacked(
-          ['address', 'uint256'],
-          [impersonatedSigner, amount]
-        )
-      );
-    
-      const proof = tree.getHexProof(leaf);
-
       
 
+      const { value, proof } = generateProof(NFT_HOLDER);
+      const amount = hre.ethers.parseUnits("16", 18);
 
-     
-      
+
       const tx = await MerkleAirdrop.connect(impersonatedSigner).claim(amount, proof);
       console.log("Transaction hash:", tx.hash);
-        
+      
     
       const receipt = await tx.wait();
         
-
-      
-      
-
       // Check final balance
       const finalBalance = await Token.balanceOf(impersonatedSigner);
       console.log(`Final Token Balance: ${finalBalance}`);

@@ -44,26 +44,6 @@ contract MerkleAirdrop {
         _;
     }
 
-    // function claim(uint256 _amount, bytes32[] calldata proof) external returns (bool success) {
-    //     if (hasClaimed[msg.sender]) revert AlreadyClaimed();
-    //     if (IERC721(requiredNFT).balanceOf(msg.sender) == 0) revert DontOwnRequiredNFT();
-
-    //     // Generate leaf (using both address and amount)
-    //     bytes32 leaf = keccak256(abi.encodePacked(msg.sender, _amount));
-
-    //     // Verify merkle proof
-    //     bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
-    //     if (!isValidLeaf) revert NotInMerkle();
-
-    //     // Update state and transfer tokens
-    //     hasClaimed[msg.sender] = true;
-    //     bool transferSuccess = rewardToken.transfer(msg.sender, _amount);
-    //     if (!transferSuccess) revert TransferFailed();
-
-    //     // Emit claim event
-    //     emit Claim(msg.sender, _amount);
-    //     return true;
-    // }
 
     function claim(uint256 _amount, bytes32[] calldata proof) external {
         if (hasClaimed[msg.sender]) revert AlreadyClaimed();
@@ -106,9 +86,4 @@ contract MerkleAirdrop {
     function getContractBalance() external view returns(uint) {
         return rewardToken.balanceOf(address(this));
     }
-
-    // function setRequiredNFT(address _nnewNFTAddress) external onlyOwner {
-    //     requiredNFT = _nnewNFTAddress;
-    //     emit RequiredNFTUpdated(_nnewNFTAddress);
-    // }
 }
