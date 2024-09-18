@@ -41,23 +41,23 @@ contract MerkleAirdrop {
 
 
 
-    function claim(uint256 _amount, address _claimer, bytes32[] calldata proof) external returns (bool success) {
+    function claim(uint256 _amount, bytes32[] calldata proof) external returns (bool success) {
         
-        if (hasClaimed[_claimer]) revert AlreadyClaimed();
-        if (IERC721(requiredNFT).balanceOf(_claimer) == 0) revert DontOwnRequiredNFT();
+        if (hasClaimed[msg.sender]) revert AlreadyClaimed();
+        if (IERC721(requiredNFT).balanceOf(msg.sender) == 0) revert DontOwnRequiredNFT();
 
         // generate leaf
-        bytes32 leaf = keccak256(abi.encodePacked(_claimer, _amount));
+        bytes32 leaf = keccak256(abi.encodePacked(msg.sender, _amount));
         // Verify merkle proof, or revert if not in tree
         bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
 
         if (!isValidLeaf) revert NotInMerkle();
 
-        hasClaimed[_claimer] = true;
-        rewardToken.transfer(_claimer, _amount);
+        hasClaimed[msg.sender] = true;
+        rewardToken.transfer(msg.sender, _amount);
 
         // Emit claim event
-        emit Claim(_claimer, _amount);
+        emit Claim(msg.sender, _amount);
 
         return true;
     }
