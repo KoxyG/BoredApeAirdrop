@@ -3,21 +3,23 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
-import "./IERC20.sol";
-
+import "./Interface/IERC20.sol";
+import "./Interface/IERC721.sol";
 
 contract MerkleAirdrop {
      
     bytes32 public merkleRoot;
     mapping(address => bool) public hasClaimed;
     address public owner;
-    address public requiredNFT = ""
+
+    address public requiredNFT = 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
 
     // errors 
     error AlreadyClaimed();
     error NotInMerkle();
     error NotOwner();
     error NotEnoughBalance();
+    error DontOwnRequiredNFT();
     
 
     // events
@@ -42,6 +44,7 @@ contract MerkleAirdrop {
     function claim(uint256 _amount, address _claimer, bytes32[] calldata proof) external returns (bool success) {
         
         if (hasClaimed[_claimer]) revert AlreadyClaimed();
+        if (IERC721(requiredNFT).balanceOf(_claimer) == 0) revert DontOwnRequiredNFT();
 
         // generate leaf
         bytes32 leaf = keccak256(abi.encodePacked(_claimer, _amount));
