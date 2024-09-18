@@ -22,13 +22,9 @@ describe("Airdrop", function () {
   }
 
 
-
-  
-
-
   async function deployMerkleAirdrop() {
 
-    const  merkleRoot  = "0x743400bd17b9e2f1765556ad5f489304aa962b5d162e77d8028c555ddb112deb";
+    const  merkleRoot  = "0x17e049bd6b26c006067e2e7c59cf3120d64a097327e638a25c3184a483c1f3bd";
     const { Token, owner } = await loadFixture(deployToken);
 
     const BoredApeYachtClub = "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d";
@@ -73,7 +69,7 @@ describe("Airdrop", function () {
     });
 
     it("Should check if the merkle root is correct", async function () {
-      const  merkleRoot  = "0x743400bd17b9e2f1765556ad5f489304aa962b5d162e77d8028c555ddb112deb";
+      const  merkleRoot  = "0x17e049bd6b26c006067e2e7c59cf3120d64a097327e638a25c3184a483c1f3bd";
       const { MerkleAirdrop, owner } = await loadFixture(deployMerkleAirdrop);
 
       expect(await MerkleAirdrop.merkleRoot()).to.equal(merkleRoot);
@@ -83,12 +79,14 @@ describe("Airdrop", function () {
       const { MerkleAirdrop, Token, BoredApeYachtClub } = await deployMerkleAirdrop();
      
        
-      const NFT_HOLDER = "0xe7b3d473411dd530D7889805e148b738F2236E6d";
+      const NFT_HOLDER = "0xbB05F71952B30786d0aC7c7A8fA045724B8d2D69";
+      await helpers.setBalance(NFT_HOLDER, hre.ethers.parseEther("0.5"));
+      await helpers.impersonateAccount(NFT_HOLDER);
       const impersonatedSigner = await hre.ethers.getSigner(NFT_HOLDER);
      
       
 
-      const { value, proof } = generateProof(NFT_HOLDER);
+      const { proof } = generateProof(NFT_HOLDER);
       const amount = hre.ethers.parseUnits("16", 18);
 
 
@@ -96,7 +94,7 @@ describe("Airdrop", function () {
       console.log("Transaction hash:", tx.hash);
       
     
-      const receipt = await tx.wait();
+      await tx.wait();
         
       // Check final balance
       const finalBalance = await Token.balanceOf(impersonatedSigner);

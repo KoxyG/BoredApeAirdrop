@@ -4,8 +4,9 @@ import fs from "fs";
 export function generateProof(address: string): { value: string[]; proof: string[] } {
   // Load the Merkle tree from a JSON file
   const tree = StandardMerkleTree.load(
-    JSON.parse(fs.readFileSync("merkletree.json", "utf8"))
+    JSON.parse(fs.readFileSync("scripts/Data/merkletree.json", "utf8"))
   );
+
 
   for (const [i, v] of tree.entries()) {
     if (v[0].toLowerCase() === address.toLowerCase()) {

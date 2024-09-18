@@ -1,3 +1,1 @@
-# BoredApeAirdrop
-
-- Merkle root: 0x661f29a607910ada4ef21e98a9425044c2e3b6ee0775140c5233215d9400b468
+# BoredApeAirdropgit

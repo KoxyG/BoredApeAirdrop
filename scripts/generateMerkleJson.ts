@@ -2,7 +2,7 @@ import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import fs from "fs";
 
 const values: [string, string][] = [
-  ["0xe7b3d473411dd530D7889805e148b738F2236E6d", "16000000000000000000"],
+  ["0xbB05F71952B30786d0aC7c7A8fA045724B8d2D69", "16000000000000000000"],
   ["0xEee899B6521DB73E94F4B9224Cdf3db0010Fa334", "7000000000000000000"],
   ["0xF3c8A1BaF3D533D300D02798169991D2aAFab019", "30000000000000000000"],
   ["0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65", "180000000000000000000"],
@@ -13,5 +13,5 @@ const tree = StandardMerkleTree.of(values, ["address", "uint256"]);
 
 console.log("Merkle Root:", tree.root);
 
-fs.writeFileSync("merkletree.json", JSON.stringify(tree.dump(), null, 2), "utf8");
+fs.writeFileSync("scripts/Data/merkletree.json", JSON.stringify(tree.dump(), null, 2), "utf8");
 console.log("JSON file created: merkletree.json");
